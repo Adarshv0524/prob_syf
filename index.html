@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Probability Tower - System Reliability Demonstration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <h1>Probability Tower System</h1>
+            <div class="probability-display">
+                <div class="system-probability">
+                    <span>System Probability: </span>
+                    <span id="systemProb">1.00</span>
+                    <span> (100%)</span>
+                </div>
+                <div class="equation">
+                    <span id="equation">P(System) = 1 × 1 × 1 × 1 = 1</span>
+                </div>
+            </div>
+            
+            <!-- Individual Component Controls -->
+            <div class="component-controls">
+                <h3>Component Controls</h3>
+                <div class="component-row">
+                    <div class="component-control" data-component="A">
+                        <span>Component A:</span>
+                        <span class="prob-value" id="probA">1.00</span>
+                        <button class="fail-btn" data-component="A">Fail A</button>
+                        <button class="restore-btn" data-component="A" style="display:none;">Restore A</button>
+                    </div>
+                    <div class="component-control" data-component="B">
+                        <span>Component B:</span>
+                        <span class="prob-value" id="probB">1.00</span>
+                        <button class="fail-btn" data-component="B">Fail B</button>
+                        <button class="restore-btn" data-component="B" style="display:none;">Restore B</button>
+                    </div>
+                    <div class="component-control" data-component="C">
+                        <span>Component C:</span>
+                        <span class="prob-value" id="probC">1.00</span>
+                        <button class="fail-btn" data-component="C">Fail C</button>
+                        <button class="restore-btn" data-component="C" style="display:none;">Restore C</button>
+                    </div>
+                    <div class="component-control" data-component="D">
+                        <span>Component D:</span>
+                        <span class="prob-value" id="probD">1.00</span>
+                        <button class="fail-btn" data-component="D">Fail D</button>
+                        <button class="restore-btn" data-component="D" style="display:none;">Restore D</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reset-controls">
+                <button id="resetSystem">Reset All Components</button>
+                <button id="randomFail">Random Failure</button>
+            </div>
+        </div>
+
+        <!-- 3D Tower Container -->
+        <div class="tower-container">
+            <div class="scene">
+                <div class="tower">
+                    <!-- LED Light at Top -->
+                    <div class="led-container">
+                        <div class="led on" id="systemLED"></div>
+                        <div class="led-label">System Status LED</div>
+                    </div>
+                    
+                    <!-- Tower Levels (Bottom to Top) -->
+                    <div class="tower-level level-4">
+                        <div class="floor"></div>
+                        <div class="column" id="columnD" data-component="D" draggable="true">
+                            <div class="column-body">
+                                <div class="column-label">D</div>
+                                <div class="wire-top"></div>
+                                <div class="wire-bottom"></div>
+                            </div>
+                        </div>
+                        <div class="drop-zone" data-component="D"></div>
+                    </div>
+                    
+                    <div class="tower-level level-3">
+                        <div class="floor"></div>
+                        <div class="column" id="columnC" data-component="C" draggable="true">
+                            <div class="column-body">
+                                <div class="column-label">C</div>
+                                <div class="wire-top"></div>
+                                <div class="wire-bottom"></div>
+                            </div>
+                        </div>
+                        <div class="drop-zone" data-component="C"></div>
+                    </div>
+                    
+                    <div class="tower-level level-2">
+                        <div class="floor"></div>
+                        <div class="column" id="columnB" data-component="B" draggable="true">
+                            <div class="column-body">
+                                <div class="column-label">B</div>
+                                <div class="wire-top"></div>
+                                <div class="wire-bottom"></div>
+                            </div>
+                        </div>
+                        <div class="drop-zone" data-component="B"></div>
+                    </div>
+                    
+                    <div class="tower-level level-1">
+                        <div class="floor"></div>
+                        <div class="column" id="columnA" data-component="A" draggable="true">
+                            <div class="column-body">
+                                <div class="column-label">A</div>
+                                <div class="wire-top"></div>
+                                <div class="wire-bottom"></div>
+                            </div>
+                        </div>
+                        <div class="drop-zone" data-component="A"></div>
+                    </div>
+                    
+                    <!-- Base -->
+                    <div class="tower-base">
+                        <div class="base-platform"></div>
+                        <div class="base-label">Probability Tower Base</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notification" class="notification"></div>
+    
+    <!-- Probability Explanation Popup -->
+    <div id="probabilityPopup" class="probability-popup">
+        <div class="popup-content">
+            <span class="close-popup">&times;</span>
+            <h3>Probability Calculation</h3>
+            <div id="popupContent"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
