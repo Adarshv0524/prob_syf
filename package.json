@@ -1,0 +1,29 @@
+{
+  "name": "aiseBanaDiya",
+  "version": "1.0.0",
+  "description": "Interactive 3D probability tower for learning series system reliability",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "serve": "python -m http.server 8000",
+    "build": "echo 'No build process needed for vanilla JS/CSS/HTML'",
+    "lint": "echo 'Add linting tools as needed'",
+    "test": "echo 'Add testing framework as needed'"
+  },
+  "keywords": [
+    "probability",
+    "education",
+    "3d-visualization",
+    "series-system",
+    "reliability-engineering",
+    "interactive-learning"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

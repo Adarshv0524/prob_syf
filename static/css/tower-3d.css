@@ -1,0 +1,742 @@
+/* ===== 3D TOWER VISUALIZATION ===== */
+.tower-visualization {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-xl);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.visualization-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.visualization-header h2 {
+    color: white;
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.view-controls {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.view-btn {
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-lg);
+}
+
+.view-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.view-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-lg);
+}
+
+/* ===== TOWER SCENE ===== */
+.tower-scene {
+    flex: 1;
+    position: relative;
+    perspective: 1200px;
+    perspective-origin: 50% 40%;
+    padding: var(--space-8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scene-container {
+    transform-style: preserve-3d;
+    position: relative;
+    width: 300px;
+    height: 500px;
+    /* REMOVED: animation and transform that caused movement */
+    transform: rotateX(-10deg) rotateY(15deg);
+    /* STATIC: No more annoying animation */
+}
+
+/* ===== LED ASSEMBLY (DIRECT MOUNT) ===== */
+.led-assembly {
+    position: absolute;
+    top: -80px;
+    left: 50%;
+    transform: translateX(-50%) translateZ(20px);
+    z-index: 100;
+}
+
+.led-component {
+    width: 20px;
+    height: 30px;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.led-lens {
+    width: 20px;
+    height: 20px;
+    border-radius: 50% 50% 45% 45%;
+    background: radial-gradient(
+        ellipse at 30% 30%,
+        rgba(255, 255, 255, 0.9),
+        rgba(255, 255, 255, 0.4) 40%,
+        rgba(0, 255, 0, 0.6) 60%,
+        rgba(0, 255, 0, 1) 100%
+    );
+    position: relative;
+    transform: translateZ(5px);
+    box-shadow: 
+        0 0 25px rgba(0, 255, 0, 0.8),
+        0 0 50px rgba(0, 255, 0, 0.4),
+        inset 0 2px 5px rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+    animation: ledGlow 2s infinite alternate;
+}
+
+.led-lens.off {
+    background: radial-gradient(
+        ellipse at 30% 30%,
+        rgba(150, 150, 150, 0.3),
+        rgba(100, 100, 100, 0.4) 40%,
+        rgba(80, 80, 80, 0.8) 100%
+    );
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+    animation: none;
+}
+
+@keyframes ledGlow {
+    0% { 
+        box-shadow: 
+            0 0 25px rgba(0, 255, 0, 0.8),
+            0 0 50px rgba(0, 255, 0, 0.4);
+    }
+    100% { 
+        box-shadow: 
+            0 0 35px rgba(0, 255, 0, 1),
+            0 0 70px rgba(0, 255, 0, 0.6);
+    }
+}
+
+.led-body {
+    width: 18px;
+    height: 15px;
+    background: linear-gradient(135deg, #e8e8e8, #d0d0d0);
+    border-radius: 0 0 2px 2px;
+    position: absolute;
+    top: 18px;
+    left: 1px;
+    transform: translateZ(-2px);
+    box-shadow: 
+        inset 0 2px 5px rgba(0, 0, 0, 0.1),
+        0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* LED LEGS (VISIBLE DIRECTLY TO TOP COMPONENT) */
+.led-legs {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+}
+
+.led-leg {
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(to bottom, #FFD700, #DAA520);
+    border-radius: 1px;
+    box-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.3),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    position: relative;
+}
+
+.led-leg.positive {
+    height: 22px;
+}
+
+.led-leg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent 30%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        transparent 70%
+    );
+    border-radius: inherit;
+}
+
+.led-mount-point {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 8px;
+    background: #2c3e50;
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mount-connector {
+    width: 12px;
+    height: 4px;
+    background: #34495e;
+    border-radius: 1px;
+}
+
+/* ===== TOWER STACK ===== */
+.tower-stack {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+.tower-component {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    transform-style: preserve-3d;
+}
+
+.tower-component[data-level="1"] { bottom: 0; }
+.tower-component[data-level="2"] { bottom: 100px; }
+.tower-component[data-level="3"] { bottom: 200px; }
+.tower-component[data-level="4"] { bottom: 300px; }
+
+/* ===== COMPONENT MOUNTS ===== */
+.component-mount-top,
+.component-mount-bottom {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 8px;
+    background: #2c3e50;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.component-mount-top {
+    top: -4px;
+}
+
+.component-mount-bottom {
+    bottom: -4px;
+}
+
+.wire-terminal {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #FFD700;
+    border-radius: 50%;
+    box-shadow: 0 0 3px rgba(255, 215, 0, 0.5);
+}
+
+.wire-terminal.positive {
+    left: 8px;
+}
+
+.wire-terminal.negative {
+    right: 8px;
+}
+
+/* ===== POPSICLE STICKS ===== */
+.popsicle-stick {
+    width: 20px;
+    height: 80px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 50;
+}
+
+.popsicle-stick:active {
+    cursor: grabbing;
+}
+
+.popsicle-stick.dragging {
+    z-index: 1000;
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+    filter: brightness(1.2);
+}
+
+/* FIXED: Keep failed components draggable */
+.popsicle-stick.failed {
+    transform: translate(100px, 50px) rotate(25deg);
+    opacity: 0.3;
+    filter: grayscale(0.8);
+    /* REMOVED: pointer-events: none; */
+    cursor: grab !important;
+    pointer-events: auto !important;
+}
+
+.stick-body {
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Wood grain */
+        repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            rgba(139, 69, 19, 0.15) 0.5px,
+            transparent 1px,
+            transparent 4px
+        ),
+        /* Base wood color */
+        linear-gradient(
+            to right,
+            #D2B48C 0%,
+            #DDB76F 25%,
+            #D2B48C 50%,
+            #F5DEB3 75%,
+            #D2B48C 100%
+        );
+    border-radius: 2px;
+    position: relative;
+    transform: translateZ(5px);
+    box-shadow: 
+        0 3px 10px rgba(0, 0, 0, 0.3),
+        inset 1px 0 2px rgba(255, 255, 255, 0.3),
+        inset -1px 0 2px rgba(0, 0, 0, 0.1);
+    border: 1px solid #B8860B;
+}
+
+.wood-texture {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        /* Wood knots */
+        radial-gradient(ellipse 2px 8px at 30% 25%, rgba(139, 69, 19, 0.3), transparent),
+        radial-gradient(ellipse 1.5px 6px at 70% 60%, rgba(160, 82, 45, 0.2), transparent);
+    border-radius: inherit;
+}
+
+.stick-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateZ(5px);
+    color: #8B4513;
+    font-weight: 900;
+    font-size: 1.2em;
+    text-shadow: 
+        1px 1px 2px rgba(255, 255, 255, 0.5),
+        -1px -1px 2px rgba(0, 0, 0, 0.3);
+    z-index: 15;
+}
+
+/* ===== WIRE CHANNELS ===== */
+.wire-channel {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 8px;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: 3;
+}
+
+.wire {
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+}
+
+.positive-wire {
+    left: 2px;
+    background: linear-gradient(to bottom, #FF6B6B, #FF8E8E);
+    box-shadow: 0 0 3px rgba(255, 107, 107, 0.5);
+}
+
+.negative-wire {
+    right: 2px;
+    background: linear-gradient(to bottom, #4ECDC4, #6BCCC4);
+    box-shadow: 0 0 3px rgba(78, 205, 196, 0.5);
+}
+
+.wire.active {
+    animation: currentFlow 2s linear infinite;
+}
+
+@keyframes currentFlow {
+    0% { 
+        filter: brightness(1);
+        box-shadow: 0 0 3px rgba(255, 107, 107, 0.5);
+    }
+    50% { 
+        filter: brightness(1.5);
+        box-shadow: 0 0 8px rgba(255, 107, 107, 0.8);
+    }
+    100% { 
+        filter: brightness(1);
+        box-shadow: 0 0 3px rgba(255, 107, 107, 0.5);
+    }
+}
+
+.wire.failed {
+    background: #999;
+    opacity: 0.4;
+    animation: none;
+}
+
+/* ===== CONNECTION POINTS ===== */
+.connection-points {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 8;
+}
+
+.connection-point {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(circle, #FFD700, #DAA520);
+    border-radius: 50%;
+    box-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    border: 1px solid #B8860B;
+}
+
+.connection-point.top.positive {
+    top: -2px;
+    left: 6px;
+}
+
+.connection-point.top.negative {
+    top: -2px;
+    right: 6px;
+}
+
+.connection-point.bottom.positive {
+    bottom: -2px;
+    left: 6px;
+}
+
+.connection-point.bottom.negative {
+    bottom: -2px;
+    right: 6px;
+}
+
+.connection-point.active {
+    animation: connectionGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes connectionGlow {
+    0%, 100% {
+        box-shadow: 
+            0 1px 3px rgba(0, 0, 0, 0.5),
+            0 0 5px rgba(255, 215, 0, 0.5);
+    }
+    50% {
+        box-shadow: 
+            0 1px 3px rgba(0, 0, 0, 0.5),
+            0 0 12px rgba(255, 215, 0, 0.8);
+    }
+}
+
+/* ===== DROP ZONES ===== */
+.drop-zone {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 3px dashed transparent;
+    border-radius: 12px;
+    transition: all 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20;
+}
+
+/* Visual indication for draggable failed components */
+.popsicle-stick.draggable-failed {
+    cursor: grab;
+    transition: all 0.3s ease;
+}
+
+.popsicle-stick.draggable-failed:hover {
+    opacity: 0.5 !important;
+    filter: grayscale(0.5) brightness(1.1);
+    transform: translate(100px, 50px) rotate(25deg) scale(1.05);
+}
+
+/* Improve drag feedback for failed components */
+.popsicle-stick.failed.dragging {
+    opacity: 0.6 !important;
+    filter: grayscale(0.4) brightness(1.2);
+    transform: translate(100px, 50px) rotate(25deg) scale(1.1);
+}
+
+
+/* Drop zone improvements */
+.drop-zone.active {
+    opacity: 1;
+    pointer-events: all;
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.15);
+    backdrop-filter: blur(8px);
+    animation: dropZonePulse 2s infinite;
+    z-index: 1000; /* Ensure drop zones are on top */
+}
+
+@keyframes dropZonePulse {
+    0%, 100% { 
+        transform: translate(-50%, -50%) scale(1);
+        border-color: #28a745;
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.05);
+        border-color: #20c997;
+    }
+}
+
+.drop-indicator {
+    text-align: center;
+    color: #28a745;
+    font-weight: 600;
+}
+
+.drop-icon {
+    font-size: 1.5em;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.drop-text {
+    font-size: 0.8em;
+    font-weight: 700;
+}
+
+/* ===== BATTERY ASSEMBLY ===== */
+.battery-assembly {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%) translateZ(15px);
+    z-index: 80;
+}
+
+.battery-housing {
+    width: 40px;
+    height: 20px;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.battery-terminals {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+}
+
+.terminal {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: bold;
+    color: white;
+}
+
+.terminal.positive {
+    background: #e74c3c;
+}
+
+.terminal.negative {
+    background: #34495e;
+}
+
+.battery-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    font-size: 8px;
+    font-weight: bold;
+}
+
+.battery-label {
+    margin-bottom: 2px;
+}
+
+.battery-voltage {
+    font-size: 6px;
+    opacity: 0.8;
+}
+
+.base-connections {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+}
+
+.base-wire {
+    width: 2px;
+    height: 8px;
+    border-radius: 1px;
+}
+
+.base-wire.positive {
+    background: #FF6B6B;
+}
+
+.base-wire.negative {
+    background: #4ECDC4;
+}
+
+/* ===== CARDBOARD BASE ===== */
+.cardboard-base {
+    position: absolute;
+    bottom: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 20px;
+    transform-style: preserve-3d;
+}
+
+.base-surface {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #D2B48C, #DDB76F, #D2B48C);
+    border-radius: 8px;
+    position: relative;
+    transform: translateZ(10px);
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid #B8860B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.corrugation-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        rgba(184, 134, 11, 0.1) 1px,
+        transparent 2px,
+        transparent 6px
+    );
+    border-radius: 6px;
+}
+
+.base-label {
+    color: #8B4513;
+    font-size: 0.7em;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+    z-index: 10;
+    position: relative;
+}
+
+/* ===== HOVER EFFECTS ===== */
+.popsicle-stick:hover {
+    filter: brightness(1.1);
+    transform: translate(-50%, -50%) translateY(-3px) scale(1.02);
+}
+
+.popsicle-stick:hover .stick-body {
+    box-shadow: 
+        0 5px 15px rgba(0, 0, 0, 0.4),
+        inset 1px 0 3px rgba(255, 255, 255, 0.4),
+        inset -1px 0 3px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+    .tower-visualization {
+        order: 1;
+        min-height: 400px;
+    }
+    
+    .scene-container {
+        transform: scale(0.8) rotateX(-10deg) rotateY(15deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .visualization-header {
+        flex-direction: column;
+        gap: var(--space-4);
+        text-align: center;
+    }
+    
+    .scene-container {
+        transform: scale(0.6) rotateX(-10deg) rotateY(15deg);
+    }
+}
