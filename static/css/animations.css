@@ -1,0 +1,515 @@
+/* Advanced Animations and Visual Effects */
+
+/* Tower Structure Animations */
+.tower-structure {
+    animation: subtleFloat 8s ease-in-out infinite;
+}
+
+@keyframes subtleFloat {
+    0%, 100% { 
+        transform: rotateX(-15deg) rotateY(20deg) rotateZ(2deg) translateY(0px);
+    }
+    25% { 
+        transform: rotateX(-12deg) rotateY(25deg) rotateZ(1deg) translateY(-2px);
+    }
+    50% { 
+        transform: rotateX(-18deg) rotateY(30deg) rotateZ(3deg) translateY(-1px);
+    }
+    75% { 
+        transform: rotateX(-13deg) rotateY(15deg) rotateZ(0deg) translateY(-3px);
+    }
+}
+
+/* Component Failure Animation */
+.popsicle-column.failing {
+    animation: componentFailure 1s ease-out forwards;
+}
+
+@keyframes componentFailure {
+    0% {
+        transform: translateY(0) rotateZ(0deg);
+        opacity: 1;
+        filter: brightness(1);
+    }
+    20% {
+        transform: translateY(-5px) rotateZ(-2deg);
+        filter: brightness(1.2);
+    }
+    40% {
+        transform: translateY(10px) rotateZ(5deg);
+        filter: brightness(0.8);
+    }
+    60% {
+        transform: translateY(20px) rotateZ(-10deg);
+        opacity: 0.7;
+        filter: brightness(0.6) grayscale(0.3);
+    }
+    100% {
+        transform: translateX(100px) translateY(50px) rotateZ(25deg) rotateY(45deg);
+        opacity: 0.4;
+        filter: brightness(0.5) grayscale(0.7);
+    }
+}
+
+/* Component Restoration Animation */
+.popsicle-column.restoring {
+    animation: componentRestore 0.8s ease-out forwards;
+}
+
+@keyframes componentRestore {
+    0% {
+        transform: translateX(100px) translateY(50px) rotateZ(25deg) rotateY(45deg);
+        opacity: 0.4;
+        filter: brightness(0.5) grayscale(0.7);
+    }
+    30% {
+        transform: translateX(50px) translateY(25px) rotateZ(10deg) rotateY(20deg);
+        opacity: 0.7;
+        filter: brightness(0.8) grayscale(0.3);
+    }
+    70% {
+        transform: translateX(10px) translateY(-5px) rotateZ(-2deg) rotateY(5deg);
+        opacity: 0.9;
+        filter: brightness(1.1) grayscale(0.1);
+    }
+    100% {
+        transform: translateY(0) rotateZ(0deg) rotateY(0deg);
+        opacity: 1;
+        filter: brightness(1) grayscale(0);
+    }
+}
+
+/* LED Status Animations */
+.led-component.on {
+    animation: ledPowerOn 0.5s ease-out;
+}
+
+.led-component.off {
+    animation: ledPowerOff 0.3s ease-in;
+}
+
+@keyframes ledPowerOn {
+    0% {
+        opacity: 0.3;
+        transform: translateZ(5px) scale(0.8);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateZ(5px) scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: translateZ(5px) scale(1);
+    }
+}
+
+@keyframes ledPowerOff {
+    0% {
+        opacity: 1;
+        transform: translateZ(5px) scale(1);
+    }
+    100% {
+        opacity: 0.3;
+        transform: translateZ(5px) scale(0.9);
+    }
+}
+
+/* Wire Power Flow Animation */
+.wire-connection.active .wire-core {
+    position: relative;
+    overflow: hidden;
+}
+
+.wire-connection.active .wire-core::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20%;
+    background: linear-gradient(to bottom, 
+        transparent, 
+        rgba(255, 255, 0, 0.8), 
+        transparent
+    );
+    animation: powerFlow 1s linear infinite;
+}
+
+@keyframes powerFlow {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(500%); }
+}
+
+.wire-connection.failed .wire-core::after {
+    display: none;
+}
+
+/* Cardboard Stress Animation */
+.cardboard-floor.stressed {
+    animation: cardboardStress 0.5s ease-in-out;
+}
+
+@keyframes cardboardStress {
+    0%, 100% { transform: translateZ(12px) rotateX(0deg); }
+    25% { transform: translateZ(10px) rotateX(1deg); }
+    75% { transform: translateZ(14px) rotateX(-1deg); }
+}
+
+/* Glue Drop Animations */
+.glue-drop {
+    animation: glueSettle 0.3s ease-out;
+}
+
+@keyframes glueSettle {
+    0% {
+        transform: translateZ(10px) scale(1.5);
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateZ(6px) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Drop Zone Activation */
+.drop-zone.activating {
+    animation: dropZoneActivate 0.4s ease-out;
+}
+
+@keyframes dropZoneActivate {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+        border-color: transparent;
+    }
+    50% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1.1);
+        border-color: #28a745;
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        border-color: #28a745;
+    }
+}
+
+/* Drag Visual Feedback */
+.popsicle-column.drag-ready {
+    animation: dragReady 2s ease-in-out infinite;
+}
+
+@keyframes dragReady {
+    0%, 100% {
+        transform: translateY(0) translateZ(5px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+    50% {
+        transform: translateY(-2px) translateZ(8px);
+        box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4);
+    }
+}
+
+/* Probability Value Changes */
+.prob-value.changing {
+    animation: valueChange 0.6s ease-out;
+}
+
+@keyframes valueChange {
+    0% {
+        transform: scale(1);
+        color: inherit;
+    }
+    50% {
+        transform: scale(1.2);
+        color: #ffc107;
+        text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        color: inherit;
+    }
+}
+
+/* System Status Changes */
+.system-probability.changing {
+    animation: systemChange 0.8s ease-out;
+}
+
+@keyframes systemChange {
+    0% {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-left-color: #007bff;
+    }
+    25% {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        border-left-color: #ffc107;
+    }
+    50% {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        border-left-color: #dc3545;
+    }
+    100% {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-left-color: #007bff;
+    }
+}
+
+/* Button Press Animations */
+.fail-btn:active, .restore-btn:active {
+    animation: buttonPress 0.1s ease-out;
+}
+
+@keyframes buttonPress {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+/* Tower Level Collapse Effect */
+.tower-level.collapsing {
+    animation: levelCollapse 1s ease-in-out;
+}
+
+@keyframes levelCollapse {
+    0% {
+        transform: translateY(0) rotateX(0deg);
+        opacity: 1;
+    }
+    30% {
+        transform: translateY(-10px) rotateX(-5deg);
+        opacity: 0.9;
+    }
+    70% {
+        transform: translateY(20px) rotateX(10deg);
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(50px) rotateX(15deg);
+        opacity: 0.3;
+    }
+}
+
+/* Battery Power Indication */
+.coin-battery.active {
+    animation: batteryActive 3s ease-in-out infinite;
+}
+
+@keyframes batteryActive {
+    0%, 100% {
+        transform: translateZ(4px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    50% {
+        transform: translateZ(6px) scale(1.02);
+        box-shadow: 0 4px 16px rgba(0, 100, 200, 0.3);
+    }
+}
+
+.coin-battery.depleted {
+    animation: batteryDepleted 2s ease-in-out infinite;
+}
+
+@keyframes batteryDepleted {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Notification Slide Animations */
+.notification.slide-in {
+    animation: notificationSlideIn 0.4s ease-out;
+}
+
+.notification.slide-out {
+    animation: notificationSlideOut 0.3s ease-in forwards;
+}
+
+@keyframes notificationSlideIn {
+    0% {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes notificationSlideOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+/* Modal Animations */
+.modal.fade-in {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.modal.fade-out {
+    animation: modalFadeOut 0.2s ease-in forwards;
+}
+
+@keyframes modalFadeIn {
+    0% {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    100% {
+        opacity: 1;
+        backdrop-filter: blur(5px);
+    }
+}
+
+@keyframes modalFadeOut {
+    0% {
+        opacity: 1;
+        backdrop-filter: blur(5px);
+    }
+    100% {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+}
+
+.modal-content.scale-in {
+    animation: modalContentScaleIn 0.3s ease-out;
+}
+
+@keyframes modalContentScaleIn {
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* View Control Animations */
+.view-controls button.active {
+    animation: viewControlActive 0.3s ease-out;
+    background: #007bff;
+    color: white;
+}
+
+@keyframes viewControlActive {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 5px 25px rgba(0, 123, 255, 0.4);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 5px 25px rgba(0, 123, 255, 0.3);
+    }
+}
+
+/* Reliability Bar Animations */
+.bar-fill.updating {
+    animation: barUpdate 0.5s ease-out;
+}
+
+@keyframes barUpdate {
+    0% {
+        transform: scaleX(1);
+        background: linear-gradient(90deg, #28a745, #20c997);
+    }
+    50% {
+        transform: scaleX(1.05);
+        background: linear-gradient(90deg, #ffc107, #fd7e14);
+    }
+    100% {
+        transform: scaleX(1);
+        background: linear-gradient(90deg, #28a745, #20c997);
+    }
+}
+
+.bar-fill.failing {
+    animation: barFail 0.8s ease-out forwards;
+}
+
+@keyframes barFail {
+    0% {
+        width: 100%;
+        background: linear-gradient(90deg, #28a745, #20c997);
+    }
+    30% {
+        width: 70%;
+        background: linear-gradient(90deg, #ffc107, #fd7e14);
+    }
+    70% {
+        width: 30%;
+        background: linear-gradient(90deg, #fd7e14, #dc3545);
+    }
+    100% {
+        width: 0%;
+        background: #dc3545;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .tower-structure {
+        animation: none;
+        transform: rotateX(-15deg) rotateY(20deg) rotateZ(2deg);
+    }
+    
+    .led-component.on .led-lens {
+        animation: none;
+    }
+    
+    .wire-connection.active .wire-core::after {
+        animation: none;
+    }
+    
+    .status-light {
+        animation: none;
+    }
+    
+    .drop-zone.active {
+        animation: none;
+    }
+    
+    .popsicle-column.drag-ready {
+        animation: none;
+    }
+    
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High Performance Mode */
+@media (prefers-reduced-motion: no-preference) and (min-width: 1200px) {
+    .tower-structure {
+        will-change: transform;
+    }
+    
+    .popsicle-column {
+        will-change: transform, opacity, filter;
+    }
+    
+    .led-lens {
+        will-change: box-shadow, transform;
+    }
+    
+    .wire-core::after {
+        will-change: transform;
+    }
+}

@@ -3,143 +3,431 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Probability Tower - System Reliability Demonstration</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Realistic 3D Probability Tower - System Reliability Demonstration</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/materials.css">
+    <link rel="stylesheet" href="static/css/animations.css">
 </head>
 <body>
     <div class="container">
         <!-- Control Panel -->
         <div class="control-panel">
-            <h1>Probability Tower System</h1>
+            <div class="panel-header">
+                <h1>🔧 Probability Tower System</h1>
+                <div class="status-indicator">
+                    <div class="status-light" id="statusLight"></div>
+                    <span id="statusText">System Operational</span>
+                </div>
+            </div>
+            
             <div class="probability-display">
                 <div class="system-probability">
-                    <span>System Probability: </span>
-                    <span id="systemProb">1.00</span>
-                    <span> (100%)</span>
+                    <div class="prob-label">System Reliability:</div>
+                    <div class="prob-value-container">
+                        <span id="systemProb">1.00</span>
+                        <span class="percentage">100%</span>
+                    </div>
                 </div>
-                <div class="equation">
-                    <span id="equation">P(System) = 1 × 1 × 1 × 1 = 1</span>
+                <div class="equation-container">
+                    <div class="equation-label">Calculation:</div>
+                    <div id="equation" class="equation">P(System) = 1 × 1 × 1 × 1 = 1.00</div>
                 </div>
             </div>
             
-            <!-- Individual Component Controls -->
+            <!-- Component Controls with realistic styling -->
             <div class="component-controls">
-                <h3>Component Controls</h3>
-                <div class="component-row">
+                <h3>🔩 Component Status</h3>
+                <div class="components-grid">
                     <div class="component-control" data-component="A">
-                        <span>Component A:</span>
-                        <span class="prob-value" id="probA">1.00</span>
-                        <button class="fail-btn" data-component="A">Fail A</button>
-                        <button class="restore-btn" data-component="A" style="display:none;">Restore A</button>
+                        <div class="component-icon popsicle-icon"></div>
+                        <div class="component-info">
+                            <span class="component-name">Popsicle Stick A</span>
+                            <div class="component-stats">
+                                <span class="prob-value" id="probA">1.00</span>
+                                <span class="reliability-bar"><span class="bar-fill" id="barA"></span></span>
+                            </div>
+                        </div>
+                        <div class="component-buttons">
+                            <button class="fail-btn" data-component="A" title="Simulate component failure">⚡ Fail</button>
+                            <button class="restore-btn" data-component="A" style="display:none;" title="Restore component">🔧 Fix</button>
+                        </div>
                     </div>
+                    
                     <div class="component-control" data-component="B">
-                        <span>Component B:</span>
-                        <span class="prob-value" id="probB">1.00</span>
-                        <button class="fail-btn" data-component="B">Fail B</button>
-                        <button class="restore-btn" data-component="B" style="display:none;">Restore B</button>
+                        <div class="component-icon popsicle-icon"></div>
+                        <div class="component-info">
+                            <span class="component-name">Popsicle Stick B</span>
+                            <div class="component-stats">
+                                <span class="prob-value" id="probB">1.00</span>
+                                <span class="reliability-bar"><span class="bar-fill" id="barB"></span></span>
+                            </div>
+                        </div>
+                        <div class="component-buttons">
+                            <button class="fail-btn" data-component="B">⚡ Fail</button>
+                            <button class="restore-btn" data-component="B" style="display:none;">🔧 Fix</button>
+                        </div>
                     </div>
+                    
                     <div class="component-control" data-component="C">
-                        <span>Component C:</span>
-                        <span class="prob-value" id="probC">1.00</span>
-                        <button class="fail-btn" data-component="C">Fail C</button>
-                        <button class="restore-btn" data-component="C" style="display:none;">Restore C</button>
+                        <div class="component-icon popsicle-icon"></div>
+                        <div class="component-info">
+                            <span class="component-name">Popsicle Stick C</span>
+                            <div class="component-stats">
+                                <span class="prob-value" id="probC">1.00</span>
+                                <span class="reliability-bar"><span class="bar-fill" id="barC"></span></span>
+                            </div>
+                        </div>
+                        <div class="component-buttons">
+                            <button class="fail-btn" data-component="C">⚡ Fail</button>
+                            <button class="restore-btn" data-component="C" style="display:none;">🔧 Fix</button>
+                        </div>
                     </div>
+                    
                     <div class="component-control" data-component="D">
-                        <span>Component D:</span>
-                        <span class="prob-value" id="probD">1.00</span>
-                        <button class="fail-btn" data-component="D">Fail D</button>
-                        <button class="restore-btn" data-component="D" style="display:none;">Restore D</button>
+                        <div class="component-icon popsicle-icon"></div>
+                        <div class="component-info">
+                            <span class="component-name">Popsicle Stick D</span>
+                            <div class="component-stats">
+                                <span class="prob-value" id="probD">1.00</span>
+                                <span class="reliability-bar"><span class="bar-fill" id="barD"></span></span>
+                            </div>
+                        </div>
+                        <div class="component-buttons">
+                            <button class="fail-btn" data-component="D">⚡ Fail</button>
+                            <button class="restore-btn" data-component="D" style="display:none;">🔧 Fix</button>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="reset-controls">
-                <button id="resetSystem">Reset All Components</button>
-                <button id="randomFail">Random Failure</button>
+            <div class="action-controls">
+                <button id="resetSystem" class="action-btn reset-btn">
+                    <span class="btn-icon">🔄</span>
+                    <span>Reset All</span>
+                </button>
+                <button id="randomFail" class="action-btn random-btn">
+                    <span class="btn-icon">🎲</span>
+                    <span>Random Failure</span>
+                </button>
+            </div>
+            
+            <div class="instructions">
+                <h4>📖 Instructions</h4>
+                <ul>
+                    <li>🖱️ Drag components to remove them</li>
+                    <li>🎯 Drop back in zone to restore</li>
+                    <li>⚡ Use fail buttons for instant failure</li>
+                    <li>👀 Watch how probability changes!</li>
+                </ul>
             </div>
         </div>
 
         <!-- 3D Tower Container -->
         <div class="tower-container">
-            <div class="scene">
-                <div class="tower">
-                    <!-- LED Light at Top -->
-                    <div class="led-container">
-                        <div class="led on" id="systemLED"></div>
-                        <div class="led-label">System Status LED</div>
-                    </div>
+            <div class="scene" id="scene">
+                <div class="tower-structure">
                     
-                    <!-- Tower Levels (Bottom to Top) -->
-                    <div class="tower-level level-4">
-                        <div class="floor"></div>
-                        <div class="column" id="columnD" data-component="D" draggable="true">
-                            <div class="column-body">
-                                <div class="column-label">D</div>
-                                <div class="wire-top"></div>
-                                <div class="wire-bottom"></div>
+                    <!-- Realistic LED Light Assembly -->
+                    <div class="led-assembly">
+                        <div class="led-housing">
+                            <div class="led-component" id="systemLED">
+                                <div class="led-lens"></div>
+                                <div class="led-body"></div>
+                                <div class="led-leads">
+                                    <div class="lead positive"></div>
+                                    <div class="lead negative"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="drop-zone" data-component="D"></div>
+                        <div class="led-label">5mm LED Status Indicator</div>
                     </div>
                     
-                    <div class="tower-level level-3">
-                        <div class="floor"></div>
-                        <div class="column" id="columnC" data-component="C" draggable="true">
-                            <div class="column-body">
-                                <div class="column-label">C</div>
-                                <div class="wire-top"></div>
-                                <div class="wire-bottom"></div>
+                    <!-- Battery Assembly -->
+                    <div class="battery-assembly">
+                        <div class="battery-holder">
+                            <div class="coin-battery" id="systemBattery">
+                                <div class="battery-top">CR2032</div>
+                                <div class="battery-side"></div>
+                                <div class="battery-bottom"></div>
                             </div>
                         </div>
-                        <div class="drop-zone" data-component="C"></div>
+                        <div class="battery-label">3V Coin Cell Battery</div>
                     </div>
                     
-                    <div class="tower-level level-2">
-                        <div class="floor"></div>
-                        <div class="column" id="columnB" data-component="B" draggable="true">
-                            <div class="column-body">
-                                <div class="column-label">B</div>
-                                <div class="wire-top"></div>
-                                <div class="wire-bottom"></div>
+                    <!-- Cardboard Tower Structure -->
+                    <div class="cardboard-tower">
+                        
+                        <!-- Level 4 (Top) -->
+                        <div class="tower-level level-4">
+                            <div class="cardboard-floor">
+                                <div class="cardboard-surface"></div>
+                                <div class="cardboard-edges">
+                                    <div class="edge-top"></div>
+                                    <div class="edge-front"></div>
+                                    <div class="edge-left"></div>
+                                    <div class="edge-right"></div>
+                                </div>
+                                <div class="corrugation-pattern"></div>
+                            </div>
+                            
+                            <!-- Popsicle Stick Column D -->
+                            <div class="column-assembly" data-level="4">
+                                <div class="popsicle-column" id="columnD" data-component="D" draggable="true">
+                                    <div class="stick-body">
+                                        <div class="wood-grain"></div>
+                                        <div class="wood-texture"></div>
+                                        <div class="stick-edges">
+                                            <div class="edge-top"></div>
+                                            <div class="edge-bottom"></div>
+                                            <div class="edge-left"></div>
+                                            <div class="edge-right"></div>
+                                        </div>
+                                    </div>
+                                    <div class="column-label">D</div>
+                                    
+                                    <!-- Realistic Wires -->
+                                    <div class="wire-connection wire-top">
+                                        <div class="wire-insulation orange"></div>
+                                        <div class="wire-core"></div>
+                                        <div class="connection-point"></div>
+                                    </div>
+                                    <div class="wire-connection wire-bottom">
+                                        <div class="wire-insulation orange"></div>
+                                        <div class="wire-core"></div>
+                                        <div class="connection-point"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Hot Glue Attachments -->
+                                <div class="glue-spots">
+                                    <div class="glue-drop glue-1"></div>
+                                    <div class="glue-drop glue-2"></div>
+                                </div>
+                                
+                                <!-- Drop Zone -->
+                                <div class="drop-zone" data-component="D">
+                                    <div class="drop-indicator">
+                                        <div class="drop-icon">📍</div>
+                                        <div class="drop-text">Drop D Here</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="drop-zone" data-component="B"></div>
-                    </div>
-                    
-                    <div class="tower-level level-1">
-                        <div class="floor"></div>
-                        <div class="column" id="columnA" data-component="A" draggable="true">
-                            <div class="column-body">
-                                <div class="column-label">A</div>
-                                <div class="wire-top"></div>
-                                <div class="wire-bottom"></div>
+                        
+                        <!-- Level 3 -->
+                        <div class="tower-level level-3">
+                            <div class="cardboard-floor">
+                                <div class="cardboard-surface"></div>
+                                <div class="cardboard-edges">
+                                    <div class="edge-top"></div>
+                                    <div class="edge-front"></div>
+                                    <div class="edge-left"></div>
+                                    <div class="edge-right"></div>
+                                </div>
+                                <div class="corrugation-pattern"></div>
+                            </div>
+                            
+                            <div class="column-assembly" data-level="3">
+                                <div class="popsicle-column" id="columnC" data-component="C" draggable="true">
+                                    <div class="stick-body">
+                                        <div class="wood-grain"></div>
+                                        <div class="wood-texture"></div>
+                                        <div class="stick-edges">
+                                            <div class="edge-top"></div>
+                                            <div class="edge-bottom"></div>
+                                            <div class="edge-left"></div>
+                                            <div class="edge-right"></div>
+                                        </div>
+                                    </div>
+                                    <div class="column-label">C</div>
+                                    
+                                    <div class="wire-connection wire-top">
+                                        <div class="wire-insulation orange"></div>
+                                        <div class="wire-core"></div>
+                                        <div class="connection-point"></div>
+                                    </div>
+                                    <div class="wire-connection wire-bottom">
+                                        <div class="wire-insulation orange"></div>
+                                        <div class="wire-core"></div>
+                                        <div class="connection-point"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="glue-spots">
+                                    <div class="glue-drop glue-1"></div>
+                                    <div class="glue-drop glue-2"></div>
+                                </div>
+                                
+                                <div class="drop-zone" data-component="C">
+                                    <div class="drop-indicator">
+                                        <div class="drop-icon">📍</div>
+                                        <div class="drop-text">Drop C Here</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="drop-zone" data-component="A"></div>
-                    </div>
-                    
-                    <!-- Base -->
-                    <div class="tower-base">
-                        <div class="base-platform"></div>
-                        <div class="base-label">Probability Tower Base</div>
+                        
+                        <!-- Level 2 -->
+                        <div class="tower-level level-2">
+                            <div class="cardboard-floor">
+                                <div class="cardboard-surface"></div>
+                                <div class="cardboard-edges">
+                                    <div class="edge-top"></div>
+                                    <div class="edge-front"></div>
+                                    <div class="edge-left"></div>
+                                    <div class="edge-right"></div>
+                                </div>
+                                <div class="corrugation-pattern"></div>
+                            </div>
+                            
+                            <div class="column-assembly" data-level="2">
+                                <div class="popsicle-column" id="columnB" data-component="B" draggable="true">
+                                    <div class="stick-body">
+                                        <div class="wood-grain"></div>
+                                        <div class="wood-texture"></div>
+                                        <div class="stick-edges">
+                                            <div class="edge-top"></div>
+                                            <div class="edge-bottom"></div>
+                                            <div class="edge-left"></div>
+                                            <div class="edge-right"></div>
+                                        </div>
+                                    </div>
+                                    <div class="column-label">B</div>
+                                    
+                                    <div class="wire-connection wire-top">
+                                        <div class="wire-insulation orange"></div>
+                                        <div class="wire-core"></div>
+                                        <div class="connection-point"></div>
+                                    </div>
+                                    <div class="wire-connection wire-bottom">
+                                        <div class="wire-insulation orange"></div>
+                                        <div class="wire-core"></div>
+                                        <div class="connection-point"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="glue-spots">
+                                    <div class="glue-drop glue-1"></div>
+                                    <div class="glue-drop glue-2"></div>
+                                </div>
+                                
+                                <div class="drop-zone" data-component="B">
+                                    <div class="drop-indicator">
+                                        <div class="drop-icon">📍</div>
+                                        <div class="drop-text">Drop B Here</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Level 1 (Bottom) -->
+                        <div class="tower-level level-1">
+                            <div class="cardboard-floor">
+                                <div class="cardboard-surface"></div>
+                                <div class="cardboard-edges">
+                                    <div class="edge-top"></div>
+                                    <div class="edge-front"></div>
+                                    <div class="edge-left"></div>
+                                    <div class="edge-right"></div>
+                                </div>
+                                <div class="corrugation-pattern"></div>
+                            </div>
+                            
+                            <div class="column-assembly" data-level="1">
+                                <div class="popsicle-column" id="columnA" data-component="A" draggable="true">
+                                    <div class="stick-body">
+                                        <div class="wood-grain"></div>
+                                        <div class="wood-texture"></div>
+                                        <div class="stick-edges">
+                                            <div class="edge-top"></div>
+                                            <div class="edge-bottom"></div>
+                                            <div class="edge-left"></div>
+                                            <div class="edge-right"></div>
+                                        </div>
+                                    </div>
+                                    <div class="column-label">A</div>
+                                    
+                                    <div class="wire-connection wire-top">
+                                        <div class="wire-insulation orange"></div>
+                                        <div class="wire-core"></div>
+                                        <div class="connection-point"></div>
+                                    </div>
+                                    <div class="wire-connection wire-bottom">
+                                        <div class="wire-insulation orange"></div>
+                                        <div class="wire-core"></div>
+                                        <div class="connection-point"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="glue-spots">
+                                    <div class="glue-drop glue-1"></div>
+                                    <div class="glue-drop glue-2"></div>
+                                </div>
+                                
+                                <div class="drop-zone" data-component="A">
+                                    <div class="drop-indicator">
+                                        <div class="drop-icon">📍</div>
+                                        <div class="drop-text">Drop A Here</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cardboard Base -->
+                        <div class="cardboard-base">
+                            <div class="base-surface">
+                                <div class="cardboard-texture"></div>
+                                <div class="base-label">Corrugated Cardboard Base</div>
+                                <div class="manufacturer-mark">📦 Sturdy Shipping Grade</div>
+                            </div>
+                            <div class="base-sides">
+                                <div class="side front"></div>
+                                <div class="side back"></div>
+                                <div class="side left"></div>
+                                <div class="side right"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+            
+            <!-- 3D Controls -->
+            <div class="view-controls">
+                <button id="resetView" title="Reset 3D View">🎯</button>
+                <button id="topView" title="Top View">⬆️</button>
+                <button id="sideView" title="Side View">↔️</button>
+                <button id="frontView" title="Front View">👁️</button>
             </div>
         </div>
     </div>
 
-    <!-- Notification System -->
-    <div id="notification" class="notification"></div>
+    <!-- Enhanced Notification System -->
+    <div id="notification" class="notification">
+        <div class="notification-icon"></div>
+        <div class="notification-content">
+            <div class="notification-title"></div>
+            <div class="notification-message"></div>
+        </div>
+        <button class="notification-close">&times;</button>
+    </div>
     
-    <!-- Probability Explanation Popup -->
-    <div id="probabilityPopup" class="probability-popup">
-        <div class="popup-content">
-            <span class="close-popup">&times;</span>
-            <h3>Probability Calculation</h3>
-            <div id="popupContent"></div>
+    <!-- Probability Explanation Modal -->
+    <div id="probabilityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Probability Calculation</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modalContent"></div>
+            <div class="modal-footer">
+                <button id="modalClose" class="modal-btn">Got it!</button>
+            </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="static/js/drag-handler.js"></script>
+    <script src="static/js/probability-engine.js"></script>
+    <script src="visual-effects.js"></script>
+    <script src="static/js/script.js"></script>
 </body>
 </html>
