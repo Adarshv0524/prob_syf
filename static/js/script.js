@@ -1,5 +1,16 @@
 class ProbabilityTower {
     constructor() {
+        // Wait for DOM to be fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.init();
+            });
+        } else {
+            this.init();
+        }
+    }
+    
+    init() {
         this.components = {
             A: { probability: 1, working: true },
             B: { probability: 1, working: true },
@@ -7,319 +18,320 @@ class ProbabilityTower {
             D: { probability: 1, working: true }
         };
         
-        this.draggedElement = null;
-        this.dragOffset = { x: 0, y: 0 };
+        this.isInitialized = false;
         
-        this.initializeEventListeners();
-        this.updateDisplay();
-        
-        // Show initial explanation
+        // Wait for all other systems to be ready
         setTimeout(() => {
-            this.showNotification('Welcome! Drag components to remove them, or use fail buttons. Watch how the system probability changes!', 'info', 5000);
-        }, 1000);
+            this.initializeEventListeners();
+            this.setupInitialState();
+            this.isInitialized = true;
+            
+            // Show welcome message
+            if (window.visualEffects) {
+                window.visualEffects.showNotification(
+                    'Welcome to the Probability Tower! Try dragging components or using the control buttons.',
+                    'info',
+                    5000
+                );
+            }
+        }, 100);
     }
     
     initializeEventListeners() {
-        // Fail/Restore buttons
+        try {
+            // System control buttons
+            this.bindSystemControls();
+            
+            // Component controls
+            this.bindComponentControls();
+            
+            // View controls
+            this.bindViewControls();
+            
+            // Keyboard shortcuts
+            this.bindKeyboardShortcuts();
+            
+            // Window events
+            this.bindWindowEvents();
+            
+        } catch (error) {
+            console.error('Error initializing event listeners:', error);
+            // Fallback initialization
+            setTimeout(() => {
+                this.initializeEventListeners();
+            }, 500);
+        }
+    }
+    
+    bindSystemControls() {
+        const resetBtn = document.getElementById('resetSystem');
+        const randomBtn = document.getElementById('randomFail');
+        
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this.resetAllComponents();
+            });
+        } else {
+            console.warn('Reset button not found');
+        }
+        
+        if (randomBtn) {
+            randomBtn.addEventListener('click', () => {
+                this.triggerRandomFailure();
+            });
+        } else {
+            console.warn('Random fail button not found');
+        }
+    }
+    
+    bindComponentControls() {
+        // Fail buttons
         document.querySelectorAll('.fail-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const component = e.target.dataset.component;
-                this.failComponent(component);
-            });
+            const component = btn.dataset.component;
+            if (component) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.failComponent(component);
+                });
+            }
         });
         
+        // Restore buttons
         document.querySelectorAll('.restore-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const component = e.target.dataset.component;
-                this.restoreComponent(component);
-            });
-        });
-        
-        // Reset and random buttons
-        document.getElementById('resetSystem').addEventListener('click', () => {
-            this.resetAllComponents();
-        });
-        
-        document.getElementById('randomFail').addEventListener('click', () => {
-            this.randomFailure();
-        });
-        
-        // Drag and drop functionality
-        this.initializeDragDrop();
-        
-        // Popup close
-        document.querySelector('.close-popup').addEventListener('click', () => {
-            this.hidePopup();
-        });
-        
-        // Click outside popup to close
-        document.getElementById('probabilityPopup').addEventListener('click', (e) => {
-            if (e.target.id === 'probabilityPopup') {
-                this.hidePopup();
+            const component = btn.dataset.component;
+            if (component) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.restoreComponent(component);
+                });
             }
         });
     }
     
-    initializeDragDrop() {
-        const columns = document.querySelectorAll('.column');
-        const dropZones = document.querySelectorAll('.drop-zone');
+    bindViewControls() {
+        const viewControls = {
+            'resetView': 'default',
+            'topView': 'top',
+            'sideView': 'side',
+            'frontView': 'front'
+        };
         
-        columns.forEach(column => {
-            column.addEventListener('dragstart', (e) => {
-                this.handleDragStart(e);
-            });
-            
-            column.addEventListener('drag', (e) => {
-                this.handleDrag(e);
-            });
-            
-            column.addEventListener('dragend', (e) => {
-                this.handleDragEnd(e);
-            });
-            
-            // Mouse events for better control
-            column.addEventListener('mousedown', (e) => {
-                this.handleMouseDown(e);
-            });
-        });
-        
-        // Document level mouse events
-        document.addEventListener('mousemove', (e) => {
-            this.handleMouseMove(e);
-        });
-        
-        document.addEventListener('mouseup', (e) => {
-            this.handleMouseUp(e);
-        });
-        
-        // Drop zone events
-        dropZones.forEach(zone => {
-            zone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                zone.classList.add('drag-over');
-            });
-            
-            zone.addEventListener('dragleave', (e) => {
-                zone.classList.remove('drag-over');
-            });
-            
-            zone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                this.handleDrop(e, zone);
-            });
-        });
-    }
-    
-    handleDragStart(e) {
-        this.draggedElement = e.target;
-        e.target.classList.add('dragging');
-        
-        const rect = e.target.getBoundingClientRect();
-        this.dragOffset.x = e.clientX - rect.left;
-        this.dragOffset.y = e.clientY - rect.top;
-        
-        // Create drag image
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', e.target.outerHTML);
-        
-        this.showNotification('Dragging component - watch the system probability!', 'info', 2000);
-    }
-    
-    handleMouseDown(e) {
-        if (e.button === 0) { // Left mouse button
-            this.draggedElement = e.target.closest('.column');
-            if (this.draggedElement) {
-                this.draggedElement.classList.add('dragging');
-                
-                const rect = this.draggedElement.getBoundingClientRect();
-                this.dragOffset.x = e.clientX - rect.left;
-                this.dragOffset.y = e.clientY - rect.top;
-                
-                e.preventDefault();
+        Object.entries(viewControls).forEach(([buttonId, view]) => {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                button.addEventListener('click', () => {
+                    this.setTowerView(view);
+                });
             }
-        }
+        });
     }
     
-    handleMouseMove(e) {
-        if (this.draggedElement && e.buttons === 1) {
-            const x = e.clientX - this.dragOffset.x;
-            const y = e.clientY - this.dragOffset.y;
+    bindKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Only handle shortcuts if not typing in input
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
             
-            this.draggedElement.style.position = 'fixed';
-            this.draggedElement.style.left = x + 'px';
-            this.draggedElement.style.top = y + 'px';
-            this.draggedElement.style.zIndex = '1000';
-            
-            // Check if over drop zone
-            this.checkDropZones(e.clientX, e.clientY);
-        }
+            switch(e.key.toLowerCase()) {
+                case 'r':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        this.resetAllComponents();
+                    }
+                    break;
+                case 'f':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        this.triggerRandomFailure();
+                    }
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                    const componentMap = { '1': 'A', '2': 'B', '3': 'C', '4': 'D' };
+                    const component = componentMap[e.key];
+                    if (component) {
+                        if (this.components[component].working) {
+                            this.failComponent(component);
+                        } else {
+                            this.restoreComponent(component);
+                        }
+                    }
+                    break;
+                case 'escape':
+                    if (window.visualEffects) {
+                        window.visualEffects.hideModal();
+                    }
+                    break;
+            }
+        });
     }
     
-    handleMouseUp(e) {
-        if (this.draggedElement) {
-            const dropZone = this.getDropZoneUnderPoint(e.clientX, e.clientY);
-            
-            if (dropZone && dropZone.dataset.component === this.draggedElement.dataset.component) {
-                // Restore to original position
-                this.restoreComponent(this.draggedElement.dataset.component);
-                this.resetColumnPosition(this.draggedElement);
+    bindWindowEvents() {
+        // Handle window resize
+        window.addEventListener('resize', this.debounce(() => {
+            this.handleResize();
+        }, 250));
+        
+        // Handle visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.pauseAnimations();
             } else {
-                // Fail the component if dropped outside its zone
-                if (this.components[this.draggedElement.dataset.component].working) {
-                    this.failComponent(this.draggedElement.dataset.component);
-                }
-                this.resetColumnPosition(this.draggedElement);
-            }
-            
-            this.draggedElement.classList.remove('dragging');
-            this.clearDropZoneHighlights();
-            this.draggedElement = null;
-        }
-    }
-    
-    handleDragEnd(e) {
-        e.target.classList.remove('dragging');
-        this.clearDropZoneHighlights();
-        
-        // If not dropped properly, fail the component
-        if (!this.isInCorrectPosition(e.target)) {
-            this.failComponent(e.target.dataset.component);
-        }
-    }
-    
-    handleDrop(e, zone) {
-        zone.classList.remove('drag-over');
-        
-        if (this.draggedElement && zone.dataset.component === this.draggedElement.dataset.component) {
-            this.restoreComponent(zone.dataset.component);
-            this.showNotification(`Component ${zone.dataset.component} restored! System probability updated.`, 'success', 3000);
-        }
-    }
-    
-    checkDropZones(x, y) {
-        document.querySelectorAll('.drop-zone').forEach(zone => {
-            const rect = zone.getBoundingClientRect();
-            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-                zone.classList.add('drag-over');
-            } else {
-                zone.classList.remove('drag-over');
+                this.resumeAnimations();
             }
         });
     }
     
-    getDropZoneUnderPoint(x, y) {
-        const elements = document.elementsFromPoint(x, y);
-        return elements.find(el => el.classList.contains('drop-zone'));
+    setupInitialState() {
+        this.updateAllDisplays();
+        this.setTowerView('default');
+        
+        // Add helpful tooltips
+        this.addTooltips();
+        
+        // Start system monitoring
+        this.startMonitoring();
     }
     
-    resetColumnPosition(column) {
-        column.style.position = '';
-        column.style.left = '';
-        column.style.top = '';
-        column.style.zIndex = '';
-    }
-    
-    clearDropZoneHighlights() {
-        document.querySelectorAll('.drop-zone').forEach(zone => {
-            zone.classList.remove('drag-over');
+    addTooltips() {
+        const tooltips = {
+            'columnA': 'Component A - Drag to remove or click Fail button',
+            'columnB': 'Component B - Drag to remove or click Fail button', 
+            'columnC': 'Component C - Drag to remove or click Fail button',
+            'columnD': 'Component D - Drag to remove or click Fail button',
+            'systemLED': 'System Status LED - ON = System Working, OFF = System Failed',
+            'systemBattery': '3V Coin Cell Battery - Powers the entire system',
+            'resetSystem': 'Reset all components to working state (Ctrl+R)',
+            'randomFail': 'Trigger a random component failure (Ctrl+F)'
+        };
+        
+        Object.entries(tooltips).forEach(([id, tooltip]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.title = tooltip;
+            }
         });
-    }
-    
-    isInCorrectPosition(element) {
-        // Simple check - in real app, you'd check actual coordinates
-        return !element.classList.contains('dragging');
     }
     
     failComponent(component) {
-        if (!this.components[component].working) return;
+        if (!this.components[component] || !this.components[component].working) {
+            return;
+        }
         
         this.components[component].probability = 0;
         this.components[component].working = false;
         
-        // Visual feedback
-        const column = document.getElementById(`column${component}`);
-        column.classList.add('failing');
-        
-        setTimeout(() => {
-            column.classList.remove('failing');
-            column.classList.add('failed');
-        }, 500);
-        
-        // Update UI
+        // Visual updates
         this.updateComponentDisplay(component);
         this.updateSystemDisplay();
         
-        // Show explanation
-        this.showProbabilityExplanation('failure', component);
+        // Notify other systems
+        if (window.probabilityEngine) {
+            // Let the engine handle its own logic
+        } else if (window.visualEffects) {
+            window.visualEffects.showNotification(
+                `Component ${component} failed! System probability is now ${this.calculateSystemProbability().toFixed(2)}`,
+                'error'
+            );
+        }
         
-        // Update buttons
-        document.querySelector(`[data-component="${component}"].fail-btn`).style.display = 'none';
-        document.querySelector(`[data-component="${component}"].restore-btn`).style.display = 'inline-block';
-        
-        this.showNotification(`Component ${component} failed! System probability is now 0.`, 'error', 4000);
+        // Visual effects
+        this.triggerFailureEffects(component);
     }
     
     restoreComponent(component) {
-        if (this.components[component].working) return;
+        if (!this.components[component] || this.components[component].working) {
+            return;
+        }
         
         this.components[component].probability = 1;
         this.components[component].working = true;
         
-        // Visual feedback
-        const column = document.getElementById(`column${component}`);
-        column.classList.remove('failed');
-        
-        // Update UI
+        // Visual updates
         this.updateComponentDisplay(component);
         this.updateSystemDisplay();
         
-        // Show explanation
-        this.showProbabilityExplanation('restore', component);
+        // Notify other systems
+        if (window.visualEffects) {
+            window.visualEffects.showNotification(
+                `Component ${component} restored! System probability is now ${this.calculateSystemProbability().toFixed(2)}`,
+                'success'
+            );
+        }
         
-        // Update buttons
-        document.querySelector(`[data-component="${component}"].fail-btn`).style.display = 'inline-block';
-        document.querySelector(`[data-component="${component}"].restore-btn`).style.display = 'none';
-        
-        this.showNotification(`Component ${component} restored! System probability updated.`, 'success', 3000);
+        // Visual effects
+        this.triggerRestoreEffects(component);
     }
     
     resetAllComponents() {
         Object.keys(this.components).forEach(component => {
-            this.restoreComponent(component);
+            this.components[component].probability = 1;
+            this.components[component].working = true;
+            this.updateComponentDisplay(component);
         });
         
-        this.showNotification('All components restored! System is fully operational.', 'success', 3000);
-        this.showProbabilityExplanation('reset');
+        this.updateSystemDisplay();
+        
+        if (window.visualEffects) {
+            window.visualEffects.showNotification('All components restored! System is fully operational.', 'success');
+            window.visualEffects.createConfetti();
+        }
     }
     
-    randomFailure() {
+    triggerRandomFailure() {
         const workingComponents = Object.keys(this.components).filter(
             key => this.components[key].working
         );
         
         if (workingComponents.length === 0) {
-            this.showNotification('No working components to fail!', 'info', 2000);
+            if (window.visualEffects) {
+                window.visualEffects.showNotification('No working components to fail!', 'info');
+            }
             return;
         }
         
         const randomComponent = workingComponents[Math.floor(Math.random() * workingComponents.length)];
         this.failComponent(randomComponent);
         
-        this.showNotification(`Random failure occurred in Component ${randomComponent}!`, 'error', 3000);
+        if (window.visualEffects) {
+            window.visualEffects.showNotification(`Random failure in Component ${randomComponent}!`, 'warning');
+        }
     }
     
     updateComponentDisplay(component) {
         const probElement = document.getElementById(`prob${component}`);
-        const controlElement = document.querySelector(`[data-component="${component}"]`);
+        const barElement = document.getElementById(`bar${component}`);
+        const controlElement = document.querySelector(`[data-component="${component}"].component-control`);
+        const failBtn = document.querySelector(`[data-component="${component}"].fail-btn`);
+        const restoreBtn = document.querySelector(`[data-component="${component}"].restore-btn`);
         
-        probElement.textContent = this.components[component].probability.toFixed(2);
+        if (probElement) {
+            probElement.textContent = this.components[component].probability.toFixed(2);
+            probElement.classList.toggle('failed', !this.components[component].working);
+        }
         
-        if (this.components[component].working) {
-            probElement.classList.remove('failed');
-            controlElement.classList.remove('failed');
-        } else {
-            probElement.classList.add('failed');
-            controlElement.classList.add('failed');
+        if (barElement) {
+            const percentage = this.components[component].probability * 100;
+            barElement.style.width = percentage + '%';
+            barElement.classList.toggle('failed', !this.components[component].working);
+        }
+        
+        if (controlElement) {
+            controlElement.classList.toggle('failed', !this.components[component].working);
+        }
+        
+        // Toggle button visibility
+        if (failBtn && restoreBtn) {
+            if (this.components[component].working) {
+                failBtn.style.display = 'flex';
+                restoreBtn.style.display = 'none';
+            } else {
+                failBtn.style.display = 'none';
+                restoreBtn.style.display = 'flex';
+            }
         }
     }
     
@@ -327,32 +339,48 @@ class ProbabilityTower {
         const systemProb = this.calculateSystemProbability();
         const systemProbElement = document.getElementById('systemProb');
         const equationElement = document.getElementById('equation');
-        const ledElement = document.getElementById('systemLED');
-        const probabilityDisplay = document.querySelector('.system-probability');
+        const statusLight = document.getElementById('statusLight');
+        const statusText = document.getElementById('statusText');
         
-        // Update probability display
-        systemProbElement.textContent = systemProb.toFixed(2);
+        if (systemProbElement) {
+            systemProbElement.textContent = systemProb.toFixed(2);
+            systemProbElement.classList.toggle('failed', systemProb === 0);
+        }
         
-        // Update equation
-        const probValues = Object.keys(this.components).map(
-            key => this.components[key].probability
-        );
-        equationElement.textContent = 
-            `P(System) = ${probValues.join(' × ')} = ${systemProb.toFixed(2)}`;
+        if (equationElement) {
+            const probValues = Object.keys(this.components).map(
+                key => this.components[key].probability.toFixed(2)
+            );
+            equationElement.textContent = 
+                `P(System) = ${probValues.join(' × ')} = ${systemProb.toFixed(2)}`;
+        }
+        
+        if (statusLight) {
+            statusLight.classList.toggle('failed', systemProb === 0);
+        }
+        
+        if (statusText) {
+            statusText.textContent = systemProb > 0 ? 'System Operational' : 'System Failed';
+        }
         
         // Update LED
-        if (systemProb > 0) {
-            ledElement.classList.remove('off');
-            ledElement.classList.add('on');
-            probabilityDisplay.classList.remove('failed');
-        } else {
-            ledElement.classList.remove('on');
-            ledElement.classList.add('off');
-            probabilityDisplay.classList.add('failed');
+        this.updateLED(systemProb > 0);
+    }
+    
+    updateLED(isOn) {
+        const ledElement = document.getElementById('systemLED');
+        if (ledElement) {
+            if (isOn) {
+                ledElement.classList.remove('off');
+                ledElement.classList.add('on');
+            } else {
+                ledElement.classList.remove('on');
+                ledElement.classList.add('off');
+            }
         }
     }
     
-    updateDisplay() {
+    updateAllDisplays() {
         Object.keys(this.components).forEach(component => {
             this.updateComponentDisplay(component);
         });
@@ -365,133 +393,139 @@ class ProbabilityTower {
         );
     }
     
-    showProbabilityExplanation(type, component = null) {
-        let content = '';
-        const systemProb = this.calculateSystemProbability();
-        const probValues = Object.keys(this.components).map(
-            key => this.components[key].probability
-        );
+    setTowerView(view) {
+        const tower = document.querySelector('.tower-structure');
+        if (!tower) return;
         
-        switch(type) {
-            case 'failure':
-                content = `
-                    <h4>Component ${component} Failed!</h4>
-                    <p><strong>What happened:</strong></p>
-                    <p>Component ${component}'s probability changed from <span style="color: #27ae60">1.00</span> to <span style="color: #e74c3c">0.00</span></p>
-                    
-                    <p><strong>Mathematical Impact:</strong></p>
-                    <p>System Probability = ${probValues.join(' × ')}</p>
-                    <p>Since one component = 0, the entire system = <span style="color: #e74c3c">${systemProb.toFixed(2)}</span></p>
-                    
-                    <p><strong>Key Insight:</strong></p>
-                    <p style="background: #fff3cd; padding: 10px; border-radius: 5px; border-left: 4px solid #ffc107;">
-                        Any number multiplied by zero equals zero. This demonstrates the "weakest link" principle in series systems.
-                    </p>
-                `;
-                break;
-                
-            case 'restore':
-                content = `
-                    <h4>Component ${component} Restored!</h4>
-                    <p><strong>What happened:</strong></p>
-                    <p>Component ${component}'s probability changed from <span style="color: #e74c3c">0.00</span> to <span style="color: #27ae60">1.00</span></p>
-                    
-                    <p><strong>Mathematical Impact:</strong></p>
-                    <p>System Probability = ${probValues.join(' × ')}</p>
-                    <p>System probability is now: <span style="color: #27ae60">${systemProb.toFixed(2)}</span></p>
-                    
-                    <p><strong>Key Insight:</strong></p>
-                    <p style="background: #d1ecf1; padding: 10px; border-radius: 5px; border-left: 4px solid #bee5eb;">
-                        ${systemProb === 1 ? 'All components working = 100% system reliability!' : 'System restored, but other components still need attention.'}
-                    </p>
-                `;
-                break;
-                
-            case 'reset':
-                content = `
-                    <h4>System Reset Complete!</h4>
-                    <p><strong>Current State:</strong></p>
-                    <p>All components: A=1, B=1, C=1, D=1</p>
-                    
-                    <p><strong>Mathematical Result:</strong></p>
-                    <p>System Probability = 1 × 1 × 1 × 1 = <span style="color: #27ae60">1.00</span></p>
-                    
-                    <p><strong>Key Insight:</strong></p>
-                    <p style="background: #d4edda; padding: 10px; border-radius: 5px; border-left: 4px solid #c3e6cb;">
-                        Perfect reliability achieved! All components working at 100% efficiency.
-                    </p>
-                `;
-                break;
+        const transforms = {
+            default: 'rotateX(-15deg) rotateY(20deg) rotateZ(2deg)',
+            top: 'rotateX(-60deg) rotateY(0deg) rotateZ(0deg)',
+            side: 'rotateX(0deg) rotateY(90deg) rotateZ(0deg)',
+            front: 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)'
+        };
+        
+        tower.style.transform = transforms[view] || transforms.default;
+        
+        // Update active button
+        document.querySelectorAll('.view-controls button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        const activeBtn = document.getElementById(view + 'View') || document.getElementById('resetView');
+        if (activeBtn) {
+            activeBtn.classList.add('active');
         }
-        
-        document.getElementById('popupContent').innerHTML = content;
-        document.getElementById('probabilityPopup').style.display = 'flex';
-        
-        // Auto-hide after 8 seconds
-        setTimeout(() => {
-            this.hidePopup();
-        }, 8000);
     }
     
-    hidePopup() {
-        document.getElementById('probabilityPopup').style.display = 'none';
+    triggerFailureEffects(component) {
+        const columnElement = document.getElementById(`column${component}`);
+        
+        if (columnElement && window.visualEffects) {
+            window.visualEffects.createParticleEffect(columnElement, 'error');
+            window.visualEffects.shakeScreen('light');
+        }
     }
     
-    showNotification(message, type = 'info', duration = 3000) {
-        const notification = document.getElementById('notification');
+    triggerRestoreEffects(component) {
+        const columnElement = document.getElementById(`column${component}`);
         
-        notification.textContent = message;
-        notification.className = `notification ${type}`;
-        notification.classList.add('show');
+        if (columnElement && window.visualEffects) {
+            window.visualEffects.createParticleEffect(columnElement, 'success');
+            window.visualEffects.highlightElement(columnElement, '#28a745', 1500);
+        }
+    }
+    
+    handleResize() {
+        // Update any size-dependent calculations
+        if (window.dragHandler) {
+            window.dragHandler.updateDropZoneBounds();
+        }
+    }
+    
+    pauseAnimations() {
+        document.body.classList.add('paused');
+    }
+    
+    resumeAnimations() {
+        document.body.classList.remove('paused');
+    }
+    
+    startMonitoring() {
+        // Monitor system state every second
+        setInterval(() => {
+            if (this.isInitialized) {
+                this.checkSystemHealth();
+            }
+        }, 1000);
+    }
+    
+    checkSystemHealth() {
+        const failedCount = Object.values(this.components).filter(c => !c.working).length;
+        const totalCount = Object.keys(this.components).length;
         
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, duration);
+        if (failedCount === totalCount && window.visualEffects) {
+            // All components failed - this is rare, show special effect
+            const now = Date.now();
+            if (!this.lastCompleteFailureTime || now - this.lastCompleteFailureTime > 5000) {
+                window.visualEffects.shakeScreen('heavy');
+                this.lastCompleteFailureTime = now;
+            }
+        }
+    }
+    
+    // Utility function for debouncing
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    
+    // Public API for external control
+    getSystemState() {
+        return {
+            components: { ...this.components },
+            systemProbability: this.calculateSystemProbability(),
+            isOperational: this.calculateSystemProbability() > 0
+        };
+    }
+    
+    setComponentState(component, working) {
+        if (working) {
+            this.restoreComponent(component);
+        } else {
+            this.failComponent(component);
+        }
     }
 }
 
-// Initialize the application when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    const tower = new ProbabilityTower();
-    
-    // Add some interactive hints
-    const columns = document.querySelectorAll('.column');
-    columns.forEach(column => {
-        column.addEventListener('mouseenter', () => {
-            const component = column.dataset.component;
-            const working = tower.components[component].working;
-            
-            if (working) {
-                column.title = `Component ${component} (Working) - Drag to remove or click Fail button`;
-            } else {
-                column.title = `Component ${component} (Failed) - Drag back to restore or click Restore button`;
-            }
-        });
+// Initialize the application
+let probabilityTower;
+
+// Ensure DOM is ready before initializing
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        probabilityTower = new ProbabilityTower();
+        
+        // Make it globally accessible
+        window.probabilityTower = probabilityTower;
     });
-    
-    // Add keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        switch(e.key.toLowerCase()) {
-            case 'r':
-                if (e.ctrlKey) {
-                    e.preventDefault();
-                    tower.resetAllComponents();
-                }
-                break;
-            case 'f':
-                if (e.ctrlKey) {
-                    e.preventDefault();
-                    tower.randomFailure();
-                }
-                break;
-            case 'escape':
-                tower.hidePopup();
-                break;
-        }
-    });
-    
-    // Add helpful tooltips
-    setTimeout(() => {
-        tower.showNotification('💡 Tip: Use Ctrl+R to reset, Ctrl+F for random failure, ESC to close popups', 'info', 5000);
-    }, 3000);
-});
+} else {
+    probabilityTower = new ProbabilityTower();
+    window.probabilityTower = probabilityTower;
+}
+
+// Add some developer conveniences
+if (typeof window !== 'undefined') {
+    window.debugTower = {
+        failAll: () => ['A', 'B', 'C', 'D'].forEach(c => probabilityTower?.failComponent(c)),
+        restoreAll: () => probabilityTower?.resetAllComponents(),
+        getState: () => probabilityTower?.getSystemState(),
+        randomFail: () => probabilityTower?.triggerRandomFailure()
+    };
+}
